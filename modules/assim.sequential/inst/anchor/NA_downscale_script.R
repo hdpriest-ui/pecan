@@ -225,17 +225,17 @@ for (y in 2012:2024) {
 
 # setup.
 base.map.dir <- "/projectnb/dietzelab/dongchen/anchorSites/downscale/MODIS_NLCD_LC.tif"
-load("/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA_100ens_gedi_2025_5_4/sda.all.forecast.analysis.Rdata")
+load("/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA/sda.all.forecast.analysis.Rdata")
 variables <- c("AbvGrndWood", "LAI", "SoilMoistFrac", "TotSoilCarb")
 settings <- "/projectnb/dietzelab/dongchen/anchorSites/NA_runs/AGU_2024/pts.shp"
-outdir <- "/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA_100ens_gedi_2025_5_4/"
+outdir <- "/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA/"
 cores <- 28
 date <- seq(as.Date("2012-07-15"), as.Date("2024-07-15"), "1 year")
 # loop over years.
 for (i in seq_along(date)) {
   print(i)
   # Assemble covariates.
-  covariates.dir <- file.path("/projectnb/dietzelab/dongchen/anchorSites/NA_runs/covariates", paste0("covariates_", lubridate::year(date[i]), ".tiff"))
+  covariates.dir <- file.path("/projectnb/dietzelab/dongchen/anchorSites/NA_runs/covariates/", paste0("covariates_", lubridate::year(date[i]), ".tiff"))
   # grab analysis.
   analysis.yr <- analysis.all[[i]]
   time <- date[i]
