@@ -109,6 +109,11 @@ NASA_DAAC_download <- function(ul_lat,
       page <- page + 1
     }
   }
+  # if no files are found.
+  if (is.null(granules_href)) {
+    PEcAn.logger::logger.info("No files found. Please check the spatial and temporal search window.")
+    return(NA)
+  }
   # remove duplicated files.
   inds <- which(duplicated(basename(granules_href)))
   if (length(inds) > 0) {
