@@ -52,7 +52,7 @@ extract_NEON_veg <- function(lon, lat, start_date, end_date, store_dir, neonsite
   neonsites <- dplyr::select(neonsites, "siteCode", "siteLatitude", "siteLongitude") #select for relevant columns
   pt1 <- terra::vect(matrix(c(lon1 = lon, lat1 = lat) , ncol = 2), type = "points", crs = "EPSG:4326")
   pt2 <- terra::vect(matrix(c(lon2 = neonsites$siteLongitude, lat2 = neonsites$siteLatitude) , ncol = 2), type = "points", crs = "EPSG:4326")
-  betyneondist <- terra::distance(p1, p2)
+  betyneondist <- terra::distance(pt1, pt2)
   mindist <- min(betyneondist)
   distloc <- match(mindist, betyneondist)
   lat <- neonsites$siteLatitude[distloc]
