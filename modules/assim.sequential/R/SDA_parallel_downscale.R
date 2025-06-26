@@ -14,6 +14,7 @@
 #' @export
 #' 
 #' @author Dongchen Zhang
+#' @importFrom foreach %dopar%
 stack_covariates_2_geotiff <- function(outdir, year, base.map.dir, cov.tif.file.list, normalize = T, cores = parallel::detectCores()) {
   # create the folder if it doesn't exist.
   if (!file.exists(outdir)) {
@@ -205,6 +206,7 @@ prepare_train_dat <- function(pts, analysis, covariates.dir, variable) {
 #' @return list of trained models across ensemble members.
 #' 
 #' @author Dongchen Zhang
+#' @importFrom foreach %dopar%
 parallel_train <- function(full_data, method = "randomForest", cores = parallel::detectCores()) {
   # grab ensemble and predictor index.
   col.names <- colnames(full_data)
@@ -281,6 +283,7 @@ parallel_train <- function(full_data, method = "randomForest", cores = parallel:
 #' @return paths to the ensemble downscaled maps.
 #' 
 #' @author Dongchen Zhang
+#' @importFrom foreach %dopar%
 parallel_prediction <- function(base.map.dir, models, cov.vecs, non.na.inds, outdir, name, cores = parallel::detectCores()) {
   # load base map.
   base.map <- terra::rast(base.map.dir)
