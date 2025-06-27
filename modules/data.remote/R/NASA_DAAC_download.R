@@ -23,6 +23,7 @@
 #' 
 #' @examples
 #' \dontrun{
+#' # SHIFT Hyper-spectral data.
 #' ul_lat <- 35
 #' ul_lon <- -121
 #' lr_lat <- 33
@@ -30,13 +31,109 @@
 #' from <- "2022-02-23"
 #' to <- "2022-05-30"
 #' doi <- "10.3334/ORNLDAAC/2183"
-#' outdir <- "/projectnb/dietzelab/dongchen/SHIFT/test_download"
 #' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
 #'                             ul_lon = ul_lon, 
 #'                             lr_lat = lr_lat, 
 #'                             lr_lon = lr_lon, 
 #'                             from = from, 
 #'                             to = to, 
+#'                             doi = doi,
+#'                             just_path = T)
+#' # GEDI level 4A data.
+#' ul_lat <- 85
+#' ul_lon <- -179
+#' lr_lat <- 7
+#' lr_lon <- -20
+#' from <- "2020-01-01"
+#' to <- "2020-12-31"
+#' doi <- "10.3334/ORNLDAAC/2056"
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
+#'                             ul_lon = ul_lon, 
+#'                             lr_lat = lr_lat, 
+#'                             lr_lon = lr_lon, 
+#'                             from = from, 
+#'                             to = to, 
+#'                             band = "V2_1",
+#'                             doi = doi,
+#'                             just_path = T)
+#' # MODIS LAI data.
+#' ul_lat <- 85
+#' ul_lon <- -179
+#' lr_lat <- 7
+#' lr_lon <- -20
+#' from <- "2020-01-01"
+#' to <- "2020-01-31"
+#' doi <- "10.5067/MODIS/MCD15A3H.061"
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
+#'                             ul_lon = ul_lon, 
+#'                             lr_lat = lr_lat, 
+#'                             lr_lon = lr_lon, 
+#'                             from = from, 
+#'                             to = to, 
+#'                             doi = doi,
+#'                             just_path = T)
+#' # SMAP Soil Moisture data.
+#' ul_lat <- 85
+#' ul_lon <- -179
+#' lr_lat <- 7
+#' lr_lon <- -20
+#' from <- "2020-01-01"
+#' to <- "2020-01-31"
+#' doi <- "10.5067/LWJ6TF5SZRG3"
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
+#'                             ul_lon = ul_lon, 
+#'                             lr_lat = lr_lat, 
+#'                             lr_lon = lr_lon, 
+#'                             from = from, 
+#'                             to = to, 
+#'                             doi = doi,
+#'                             just_path = T)
+#' # GLANCE Phenology and LC data.
+#' ul_lat <- 85
+#' ul_lon <- -179
+#' lr_lat <- 7
+#' lr_lon <- -20
+#' from <- "2019-01-01"
+#' to <- "2019-12-31"
+#' doi <- "10.5067/MEaSUREs/GLanCE/GLanCE30.001"
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
+#'                             ul_lon = ul_lon, 
+#'                             lr_lat = lr_lat, 
+#'                             lr_lon = lr_lon, 
+#'                             from = from, 
+#'                             to = to, 
+#'                             doi = doi,
+#'                             just_path = T)
+#' # HLS reflectance data.
+#' ul_lat <- 35
+#' ul_lon <- -121
+#' lr_lat <- 33
+#' lr_lon <- -117
+#' from <- "2022-02-23"
+#' to <- "2022-05-30"
+#' doi <- "10.5067/HLS/HLSS30.002"
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
+#'                             ul_lon = ul_lon, 
+#'                             lr_lat = lr_lat, 
+#'                             lr_lon = lr_lon, 
+#'                             from = from, 
+#'                             to = to, 
+#'                             doi = doi,
+#'                             just_path = T)
+#'                             ul_lat <- 35
+#' # HLS Phenology data.
+#' ul_lon <- -121
+#' lr_lat <- 33
+#' lr_lon <- -117
+#' from <- "2019-01-01"
+#' to <- "2019-12-31"
+#' doi <- "10.5067/Community/MuSLI/MSLSP30NA.011"
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat,
+#'                             ul_lon = ul_lon,
+#'                             lr_lat = lr_lat,
+#'                             lr_lon = lr_lon,
+#'                             from = from,
+#'                             to = to,
 #'                             doi = doi,
 #'                             just_path = T)
 #' }
@@ -65,7 +162,9 @@ NASA_DAAC_download <- function(ul_lat,
     PEcAn.logger::logger.info("Please provide the physical path to the credential file!")
     return(NA)
   }
-  netrc <- getnetrc(credential_path)
+  if (!just_path) {
+    netrc <- getnetrc(credential_path)
+  }
   # setup arguments for URL.
   daterange <- c(from, to)
   # grab provider and concept id from CMR based on DOI.
@@ -93,16 +192,11 @@ NASA_DAAC_download <- function(ul_lat,
       granules <- result$feed$entry
       if (length(granules) == 0) 
         break
-      # if it's GLANCE product.
-      # GLANCE and HLS products have special data archive.
-      if (doi %in% c("10.5067/MEaSUREs/GLanCE/GLanCE30.001", "10.5067/HLS/HLSS30.002")) {
-        granules_href <- c(granules_href, sapply(granules, function(x) {sapply(x$links,function(y) y$href)}))
-      } else {
-        granules_href <- c(granules_href, sapply(granules, function(x) x$links[[1]]$href))
-      }
+      # grab raw URLs from the records.
+      granules_href <- c(granules_href, sapply(granules, function(x) {sapply(x$links,function(y) y$href)}))
       # grab specific band.
       if (!is.null(band)) {
-        granules_href <- granules_href[which(grepl(band, granules_href, fixed = T))]
+        granules_href <- granules_href[which(grepl(band, basename(granules_href), fixed = T))]
       }
       page <- page + 1
     }
@@ -120,10 +214,10 @@ NASA_DAAC_download <- function(ul_lat,
     return(NA)
   }
   # remove non-image files.
-  inds <- which(grepl(".h5", basename(granules_href)) |
-                  grepl(".tif", basename(granules_href)) |
-                  grepl(".hdf", basename(granules_href)) |
-                  grepl(".nc", basename(granules_href)))
+  inds <- which(str_ends(basename(granules_href), ".h5") |
+                  str_ends(basename(granules_href), ".tif") |
+                  str_ends(basename(granules_href), ".hdf") |
+                  str_ends(basename(granules_href), ".nc"))
   granules_href <- granules_href[inds]
   # detect existing files if we want to download the files.
   if (!just_path) {
