@@ -39,6 +39,12 @@ library(dplyr)
 ```
 
 ---
+important !! 
+
+# NOTE: You must provide a 'settings' object (as an R list) before running the code below.
+# Example: settings <- list(run = list(start.date = "2025-01-01", end.date = "2025-12-31"))
+# Or load from file: settings <- xmlToList(xmlParse("settings.xml"))
+---
 
 Filter by one group
 
