@@ -14,6 +14,8 @@
 #'
 ERA5_met_process <- function(settings, in.path, out.path, write.db=FALSE, write = TRUE){
   #getting site info
+  start_date <- settings$state.data.assimilation$start.date
+  end_date <- settings$state.data.assimilation$end.date
   #grab the site info from Bety DB if we can't get the site info directly from the settings object.
   if ("try-error" %in% class(try(site_info <- settings %>%
                                  purrr::map(~.x[['run']] ) %>%
@@ -72,8 +74,8 @@ ERA5_met_process <- function(settings, in.path, out.path, write.db=FALSE, write 
   final.nc.files <- extract.nc.ERA5(site_info$lat, 
                                     site_info$lon, 
                                     in.path, 
-                                    settings$state.data.assimilation$start.date, 
-                                    settings$state.data.assimilation$end.date, 
+                                    start_date, 
+                                    end_date, 
                                     out.path, 
                                     "ERA5_", 
                                     site_info$site.id)
@@ -89,17 +91,18 @@ ERA5_met_process <- function(settings, in.path, out.path, write.db=FALSE, write 
   opts <- list(progress=progress)
   # grab specific model function.
   met2model_method <- do.call("::", list(paste0("PEcAn.", settings$model$type), paste0("met2model.", settings$model$type)))
+  pack.name <- paste0("PEcAn.", settings$model$type)
   Clim_paths <- 
     foreach::foreach(ens.folders = final.nc.files, 
-                     .packages=c("Kendall", "ncdf4", "PEcAn.SIPNET", "purrr"), 
+                     .packages=c("Kendall", pack.name), 
                      .options.snow=opts) %dopar% {
                        ensemble.clim.files <- c()
                        for (ens in seq_along(ens.folders)) {
                          out <- met2model_method(in.path = ens.folders[ens],
                                                  in.prefix = paste0("ERA5.", ens),
                                                  outfolder = ens.folders[ens],
-                                                 start_date = settings$state.data.assimilation$start.date,
-                                                 end_date = settings$state.data.assimilation$end.date)
+                                                 start_date = start_date,
+                                                 end_date = end_date)
                          ensemble.clim.files <- c(ensemble.clim.files, out$file)
                        }
                        ensemble.clim.files
