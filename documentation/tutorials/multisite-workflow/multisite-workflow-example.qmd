@@ -48,7 +48,7 @@ settings <- list(
     bety = list(
       user = "bety",
       password = "bety",
-      host = "localhost",
+      host = "postgres",
       dbname = "bety",
       driver = "PostgreSQL"
     )
