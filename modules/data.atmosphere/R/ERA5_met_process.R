@@ -92,6 +92,7 @@ ERA5_met_process <- function(settings, in.path, out.path, write.db=FALSE, write 
   # grab specific model function.
   met2model_method <- do.call("::", list(paste0("PEcAn.", settings$model$type), paste0("met2model.", settings$model$type)))
   pack.name <- paste0("PEcAn.", settings$model$type)
+  ens.folders <- NULL
   Clim_paths <- 
     foreach::foreach(ens.folders = final.nc.files, 
                      .packages=c("Kendall", pack.name), 

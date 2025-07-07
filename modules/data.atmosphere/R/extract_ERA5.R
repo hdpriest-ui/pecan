@@ -76,6 +76,7 @@ extract.nc.ERA5 <-
       if (verbose) {
         PEcAn.logger::logger.info("Extracting NC file.\n")
       }
+      vname <- NULL
       all.data.point <- 
         foreach::foreach(vname = vars, 
                          .packages=c("Kendall", "ncdf4")) %dopar% {
@@ -120,6 +121,7 @@ extract.nc.ERA5 <-
       if (verbose) {
         PEcAn.logger::logger.info("Writing NC files.\n")
       }
+      data.point <- NULL
       final.nc.files[[i]] <- 
         foreach::foreach(data.point = all.site.data.point, 
                          s.ind = seq_along(slat),
