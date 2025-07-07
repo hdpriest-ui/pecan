@@ -62,7 +62,6 @@ Imports:
 Suggests:
     doParallel,
     doSNOW,
-    foreach,
     furrr,
     future,
     getPass,

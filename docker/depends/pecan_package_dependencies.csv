@@ -70,7 +70,6 @@
 "foreach","*","base/remote","Imports",FALSE
 "foreach","*","modules/assim.sequential","Imports",FALSE
 "foreach","*","modules/data.atmosphere","Imports",FALSE
-"foreach","*","modules/data.atmosphere","Suggests",FALSE
 "foreach","*","modules/data.land","Imports",FALSE
 "foreach","*","modules/data.remote","Imports",FALSE
 "fs","*","base/db","Imports",FALSE
