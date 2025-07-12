@@ -52,7 +52,7 @@ ic_process <- function(settings, input, dir, overwrite = FALSE){
   #grab site lat and lon info
 
   # check if site metadata is available in the settings$run$site
-  if (!is.null(settings$run$site$lat) && !is.null(settings$run$site$lon)) {
+  if (isTRUE(nzchar(settings$run$site$lat)) && isTRUE(nzchar(settings$run$site$lon))) {
     # if lat and lon are available, use them directly
     latlon <- data.frame(lat = settings$run$site$lat, lon = settings$run$site$lon)
   } else {
