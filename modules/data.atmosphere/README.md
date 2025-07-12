@@ -26,10 +26,9 @@ The PEcAn.data.atmosphere package is 'standalone'.
 
 ## Documentation
 
-## * [Package Documentation](https://pecanproject.github.io/pecan//modules/data.atmosphere/inst/web/index.html)
+* [Package Documentation](https://pecanproject.github.io/package-documentation/develop/data.atmosphere/index.html)
 * Vignettes
 
-<!-- Previous link: https://pecanproject.github.io/pecan//modules/data.atmosphere/inst/web/index.html (404) -->
 
 ## PEcAn variable names
 
