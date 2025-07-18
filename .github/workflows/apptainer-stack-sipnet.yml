@@ -1,0 +1,29 @@
+name : Apptainer Sipnet Test
+
+env:
+  DEFAULT_R_VERSION: 4.2
+
+on :
+  push:
+    branches:
+      - main
+      - develop
+
+  # allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  apptainer-sipnet:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      DEPEND: "build"
+      DOCKERHUB_REPO: "hdpriest0uiuc"
+
+    steps:
+
+    - name: Build Containers
+      run: |
+        ./docker_hpc.sh -i latest -r ${DEFAULT_R_VERSION}
+        
