@@ -207,7 +207,6 @@ ic_process <- function(settings, input, dir, overwrite = FALSE){
                                        outfolder  = outfolder,
                                        n.ensemble = i,
                                        dir        = dir,
-                                       machine    = machine,
                                        model      = model$name,
                                        start_date = start_date,
                                        end_date   = end_date,
