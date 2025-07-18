@@ -238,7 +238,7 @@ done
 # #         models/maespa
 # # done
 # build sipnet
-for version in git; do
+for version in master; do
     ${DEBUG} docker build \
         --tag ${DOCKERHUB_REPO}/model-sipnet-${version}:${IMAGE_VERSION} \
         --build-arg PARENT_IMAGE="${PARENT_IMAGE}" \

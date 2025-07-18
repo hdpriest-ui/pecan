@@ -1,0 +1,156 @@
+name: Apptainer GHA
+
+env:
+  DEFAULT_R_VERSION: 4.4
+  R_VERSION: 4.4
+  GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+    inputs:
+      r_version:
+        description: 'R version to use'
+        required: true
+        type: choice
+        default: "$DEFAULT_R_VERSION"
+        options:
+          - 4.1
+          - 4.2
+          - 4.3
+          - 4.4
+          - devel
+
+jobs:
+  # ----------------------------------------------------------------------
+  # Set R version.
+  # This is a hack: We really just want a global env var here, but it seems
+  # `env:` values can't be passed into a `jobs.<jobid>.with` context
+  # (see https://github.com/actions/runner/issues/2372).
+  # As an ugly workaround, we assign it to a job output instead.
+  # ----------------------------------------------------------------------
+  rversion:
+    runs-on: ubuntu-latest
+    steps:
+      - id: default
+        if: github.event_name != 'schedule'
+        run: echo "R_VERSION=4.4" >> "$GITHUB_OUTPUT"
+    outputs:
+      # Note: "steps.*" seems to mean "all step ids", not "all steps"
+      # If seeing weird results here, check that all steps above have an id set.
+      R_VERSION: 4.4
+
+  # ----------------------------------------------------------------------
+  # depends image has all the dependencies installed
+  # ----------------------------------------------------------------------
+  depends:
+    permissions:
+      packages: write
+    needs: rversion
+    uses: ./.github/workflows/apptainer-build-image.yml
+    with:
+      image-name: depends
+      build-context: docker/depends
+      dockerfile: docker/depends/Dockerfile
+      r-version: ${{ needs.rversion.outputs.R_VERSION }}
+      platforms: "linux/amd64"
+    secrets: inherit
+
+  # ----------------------------------------------------------------------
+  # base image has PEcAn compiled and installed, and depends on depends
+  # ----------------------------------------------------------------------
+  base:
+    needs: [rversion, depends]
+    uses: ./.github/workflows/apptainer-build-image.yml
+    with:
+      image-name: base
+      build-context: .
+      dockerfile: docker/base/Dockerfile
+      r-version: ${{ needs.rversion.outputs.R_VERSION }}
+      parent-image: "depends"
+      platforms: "linux/amd64"
+    secrets: inherit
+
+# ----------------------------------------------------------------------
+# models image has some python installed to run models, depends on base
+# ----------------------------------------------------------------------
+  models:
+    needs: [rversion, base]
+    uses: ./.github/workflows/apptainer-build-image.yml
+    with:
+      image-name: models
+      build-context: docker/models
+      dockerfile: docker/models/Dockerfile
+      r-version: ${{ needs.rversion.outputs.R_VERSION }}
+      parent-image: "base"
+    secrets: inherit
+
+# ----------------------------------------------------------------------
+# Next are images that have models installed
+# ----------------------------------------------------------------------
+  modelsbinary:
+    needs: [rversion, models]
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          # - basgra
+          # - biocro
+          # - ed2_2.2.0
+          # - ed2_git
+          # - maespa
+          - sipnet
+        include:
+          # - name: basgra
+          #   CONTEXT: models/basgra
+          #   DOCKERFILE: models/basgra/Dockerfile
+          #   PLATFORM: "linux/amd64"
+          #   MODEL: basgra
+          #   VERSION: BASGRA_N_v1
+          # - name: biocro
+          #   CONTEXT: models/biocro
+          #   DOCKERFILE: models/biocro/Dockerfile
+          #   PLATFORM: "linux/amd64"
+          #   MODEL: biocro
+          #   VERSION: "0.95"
+          # - name: ed2_2.2.0
+          #   CONTEXT: models/ed
+          #   DOCKERFILE: models/ed/Dockerfile
+          #   PLATFORM: "linux/amd64"
+          #   MODEL: ed2
+          #   VERSION: "2.2.0"
+          # - name: ed2_git
+          #   CONTEXT: models/ed
+          #   DOCKERFILE: models/ed/Dockerfile
+          #   PLATFORM: "linux/amd64"
+          #   MODEL: ed2
+          #   VERSION: "git"
+          # - name: maespa
+          #   CONTEXT: models/maespa
+          #   DOCKERFILE: models/maespa/Dockerfile
+          #   PLATFORM: "linux/amd64"
+          #   MODEL: maespa
+          #   VERSION: "git"
+          - name: sipnet
+            CONTEXT: models/sipnet
+            DOCKERFILE: models/sipnet/Dockerfile
+            PLATFORM: "linux/amd64"
+            MODEL: sipnet
+            VERSION: "git"
+    uses: ./.github/workflows/apptainer-build-image.yml
+    with:
+      image-name: model-${{ matrix.MODEL }}-${{ matrix.VERSION }}
+      build-context: ${{ matrix.CONTEXT }}
+      dockerfile: ${{ matrix.DOCKERFILE }}
+      r-version: ${{ needs.rversion.outputs.R_VERSION }}
+      parent-image: "models"
+      model-version: ${{ matrix.VERSION }}
+      platforms: ${{ matrix.PLATFORM }}
+    secrets: inherit
+

@@ -12,6 +12,8 @@ ARG MODEL_VERSION=git
 
 # download, unzip and build sipnet
 WORKDIR /src
+RUN lsb_release -a
+RUN apt list --installed
 RUN git clone https://github.com/PecanProject/sipnet.git \
     && cd sipnet \
     && if [ "${MODEL_VERSION}" != "git" ]; then git checkout ${MODEL_VERSION}; fi \
