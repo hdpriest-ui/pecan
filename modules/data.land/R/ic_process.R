@@ -112,14 +112,18 @@ ic_process <- function(settings, input, dir, overwrite = FALSE){
     # end_date = as.Date("2021-09-01")
     #Note the start and end dates for ICs are not the same as those for the forecast runs
     #please check out NEON products DP1.10098.001 for your desired site to check data availability before setting start and end dates
-  }else{
-
+  }else if(!is.null(input$startdate) && !is.null(input$enddate)){
+    start_date <- as.Date(input$startdate)
+    end_date <- as.Date(input$enddate)
+  } else{
+   
    query      <- paste0("SELECT * FROM inputs where id = ", input$id)
    input_file <- PEcAn.DB::db.query(query, con = con) 
    start_date <- input_file$start_date
    end_date   <- input_file$end_date
 
   }
+  
   # set up host information
   if (host$name == "localhost") {
     machine.host <- PEcAn.remote::fqdn()
