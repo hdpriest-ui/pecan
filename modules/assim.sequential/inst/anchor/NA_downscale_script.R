@@ -226,7 +226,7 @@ for (y in 2012:2024) {
 # setup parallel downscaling.
 method <- "randomForest"
 base.map.dir <- "/projectnb/dietzelab/dongchen/anchorSites/downscale/MODIS_NLCD_LC.tif"
-load("/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA_8k_site/sda.all.forecast.analysis_GEDI.Rdata")
+load("/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA_8k_site/sda.all.forecast.analysis_noGEDI.Rdata")
 variables <- c("AbvGrndWood", "LAI", "SoilMoistFrac", "TotSoilCarb")
 settings <- "/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA_8k_site/shapefile/pts.shp"
 outdir <- "/projectnb/dietzelab/dongchen/anchorSites/NA_runs/SDA_8k_site/"
@@ -244,7 +244,7 @@ for (i in seq_along(date)) {
   for (j in seq_along(variables)) {
     # setup folder.
     variable <- variables[j]
-    folder.path <- file.path(file.path(outdir, "downscale_maps_analysis_lc_ts"), paste0(variables[j], "_", date[i]))
+    folder.path <- file.path(file.path(outdir, "downscale_maps_analysis_lc_ts_noGEDI"), paste0(variables[j], "_", date[i]))
     dir.create(folder.path)
     saveRDS(list(settings = settings, 
                  analysis.yr = analysis.yr, 
@@ -255,7 +255,7 @@ for (i in seq_along(date)) {
                  base.map.dir = base.map.dir,
                  method = method,
                  cores = cores, 
-                 outdir = file.path(outdir, "downscale_maps_analysis_lc_ts")),
+                 outdir = file.path(outdir, "downscale_maps_analysis_lc_ts_noGEDI")),
          file = file.path(folder.path, "dat.rds"))
     # prepare for qsub.
     jobsh <- c("#!/bin/bash -l", 
