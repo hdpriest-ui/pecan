@@ -1,6 +1,30 @@
 name: CCMMF Sipnet Workflow
 
 on:
+  workflow_dispatch:
+    inputs:
+      image-repository:
+        description: 'Docker image repository for sipnet'
+        required: false
+        default: 'hdpriest0uiuc'
+        type: string
+      sipnet-image:
+        description: 'Sipnet image name and tag'
+        required: false
+        default: 'sipnet:latest'
+        type: string
+      workflows-branch:
+        description: 'Branch to checkout from workflows repo'
+        required: false
+        fault: 'main'
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: 'AWS access key ID for S3 access'
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: 'AWS secret access key for S3 access'
+        required: true
   workflow_call:
     inputs:
       image-repository:
