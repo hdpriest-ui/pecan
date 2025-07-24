@@ -189,54 +189,6 @@ for x in models; do
     PARENT_IMAGE="${DOCKERHUB_REPO}/$x"
 done
 
-# # shiny apps
-# # for x in dbsync; do
-# #     ${DEBUG} docker build \
-# #         --tag pecan/shiny-$x:${IMAGE_VERSION} \
-# #         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" ${GITHUB_WORKFLOW_ARG} \
-# #         shiny/$x
-# # done
-
-# # --------------------------------------------------------------------------------
-# # MODEL BUILD SECTION
-# # --------------------------------------------------------------------------------
-
-# # build basgra
-# # for version in BASGRA_N_v1.0; do
-# #     ${DEBUG} docker build \
-# #         --tag pecan/model-basgra-$(echo $version | tr '[A-Z]' '[a-z]'):${IMAGE_VERSION} \
-# #         --build-arg MODEL_VERSION="${version}" \
-# #         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" ${GITHUB_WORKFLOW_ARG} \
-# #         models/basgra
-# # done
-
-# # # build biocro
-# # for version in 0.95; do
-# #     ${DEBUG} docker build \
-# #         --tag pecan/model-biocro-${version}:${IMAGE_VERSION} \
-# #         --build-arg MODEL_VERSION="${version}" \
-# #         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" ${GITHUB_WORKFLOW_ARG} \
-# #         models/biocro
-# # done
-
-# # # build ed2
-# # for version in 2.2.0 git; do
-# #     ${DEBUG} docker build \
-# #         --tag pecan/model-ed2-${version}:${IMAGE_VERSION} \
-# #         --build-arg MODEL_VERSION="${version}" \
-# #         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" ${GITHUB_WORKFLOW_ARG} \
-# #         --build-arg BINARY_VERSION="2.2" \
-# #         models/ed
-# # done
-
-# # # build maespa
-# # for version in git; do
-# #     ${DEBUG} docker build \
-# #         --tag pecan/model-maespa-${version}:${IMAGE_VERSION} \
-# #         --build-arg MODEL_VERSION="${version}" \
-# #         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" ${GITHUB_WORKFLOW_ARG} \
-# #         models/maespa
-# # done
 # build sipnet
 for version in master; do
     ${DEBUG} docker build \
@@ -246,21 +198,3 @@ for version in master; do
         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" \
         models/sipnet
 done
-
-# # --------------------------------------------------------------------------------
-# # PEcAn Apps
-# # --------------------------------------------------------------------------------
-
-# # build apps
-# # for x in api; do
-# #     ${DEBUG} docker build \
-# #         --secret id=github_token,env=GITHUB_PAT \
-# #         --tag pecan/$x:${IMAGE_VERSION} \
-# #         --build-arg IMAGE_VERSION="${IMAGE_VERSION}" ${GITHUB_WORKFLOW_ARG} \
-# #         --build-arg PECAN_VERSION="${VERSION}" \
-# #         --build-arg PECAN_GIT_BRANCH="${PECAN_GIT_BRANCH}" \
-# #         --build-arg PECAN_GIT_CHECKSUM="${PECAN_GIT_CHECKSUM}" \
-# #         --build-arg PECAN_GIT_DATE="${PECAN_GIT_DATE}" \
-# #         apps/$x/
-# # done
-
