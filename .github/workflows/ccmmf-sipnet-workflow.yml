@@ -25,9 +25,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         description: 'AWS secret access key for S3 access'
         required: true
-      GITHUB_TOKEN:
-        description: 'GitHub token for cloning repositories'
-        required: false
 
 jobs:
   ccmmf-sipnet-job:
