@@ -52,7 +52,7 @@ on:
 
 jobs:
   ccmmf-sipnet-job:
-    runs-on: ccmmf  # Using your self-hosted runner
+    runs-on: [self-hosted, linux, x64]  # Using your self-hosted runner
     
     steps:
       - name: Checkout current repository
