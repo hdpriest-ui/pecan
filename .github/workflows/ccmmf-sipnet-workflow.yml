@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "Configuring AWS CLI"
           module load apptainer
-          conda init && bash && conda activate awscli-env
+          source /home/hdpriest/miniconda3/bin/activate awscli-env
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region us-east-1
