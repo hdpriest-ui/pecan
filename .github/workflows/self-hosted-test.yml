@@ -2,6 +2,6 @@ name: Test CCMMF Runner
 on: workflow_dispatch
 jobs:
   test:
-    runs-on: ccmmf
+    runs-on: [self-hosted, linux, x64]
     steps:
       - run: echo "Runner is working"
