@@ -58,29 +58,11 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - name: Setup environment
-        run: |
-          echo "Setting up environment variables and paths"
-          export CONDA_ENV_PATH="/tmp/pecan_env"
-          export WORKFLOWS_DIR="/tmp/ccmmf_workflows"
-          echo "CONDA_ENV_PATH=$CONDA_ENV_PATH" >> $GITHUB_ENV
-          echo "WORKFLOWS_DIR=$WORKFLOWS_DIR" >> $GITHUB_ENV
-
-      - name: Install required packages
-        run: |
-          echo "Installing required system packages"
-          sudo apt-get update
-          sudo apt-get install -y \
-            apptainer \
-            awscli \
-            wget \
-            curl \
-            git \
-            build-essential
-
       - name: Configure AWS CLI
         run: |
           echo "Configuring AWS CLI"
+          module load apptainer
+          conda activate awscli-env
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region us-east-1
