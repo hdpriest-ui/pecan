@@ -1,0 +1,7 @@
+name: Test CCMMF Runner
+on: workflow_dispatch
+jobs:
+  test:
+    runs-on: ccmmf
+    steps:
+      - run: echo "Runner is working"
