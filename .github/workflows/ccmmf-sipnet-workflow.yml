@@ -61,12 +61,12 @@ jobs:
       - name: Configure AWS CLI
         run: |
           echo "Configuring AWS CLI"
-          module load apptainer
           source /home/hdpriest/miniconda3/bin/activate awscli-env
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region us-east-1
+          aws configure set default.region garage
           aws configure set default.s3.signature_version s3v4
+          module load apptainer
 
       - name: Pull Sipnet image with Apptainer
         run: |
