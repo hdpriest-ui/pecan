@@ -37,7 +37,6 @@ Suggests:
     exactextractr,
     mvtnorm,
     ggrepel,
-    emdbook,
     glue,
     ggpubr,
     gridExtra,
