@@ -11,7 +11,7 @@ on:
       sipnet-image:
         description: 'Sipnet image name and tag'
         required: false
-        default: 'sipnet:latest'
+        default: 'model-sipnet-git:latest'
         type: string
       workflows-branch:
         description: 'Branch to checkout from workflows repo'
@@ -28,7 +28,7 @@ on:
       sipnet-image:
         description: 'Sipnet image name and tag'
         required: false
-        default: 'sipnet:latest'
+        default: 'model-sipnet-git:latest'
         type: string
       workflows-branch:
         description: 'Branch to checkout from workflows repo'
