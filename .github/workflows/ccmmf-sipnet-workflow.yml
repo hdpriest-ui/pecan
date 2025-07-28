@@ -18,13 +18,6 @@ on:
         required: false
         default: 'main'
         type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        description: 'AWS access key ID for S3 access'
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: 'AWS secret access key for S3 access'
-        required: true
   workflow_call:
     inputs:
       image-repository:
@@ -42,13 +35,6 @@ on:
         required: false
         default: 'main'
         type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        description: 'AWS access key ID for S3 access'
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: 'AWS secret access key for S3 access'
-        required: true
 
 jobs:
   ccmmf-sipnet-job:
