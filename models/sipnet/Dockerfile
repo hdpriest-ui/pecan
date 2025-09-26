@@ -37,6 +37,12 @@ FROM ${PARENT_IMAGE}:${IMAGE_VERSION}
 #RUN Rscript --vanilla -e  "devtools::install_local('/src/sipnet'); q(status=as.integer(!'PEcAn.SIPNET' %in% installed.packages()))" 
 
 # ----------------------------------------------------------------------
+# ADD IN TARGETS FOR CCMMF NEEDS
+# ----------------------------------------------------------------------
+
+RUN Rscript --vanilla -e "install.packages(c('targets', 'uuid', 'tarchetypes'), repos = c(CRAN = 'cloud.r-project.org'))"
+
+# ----------------------------------------------------------------------
 # SETUP FOR SPECIFIC SIPNET VERSION
 # ----------------------------------------------------------------------
 
