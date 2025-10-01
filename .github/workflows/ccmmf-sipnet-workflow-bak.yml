@@ -1,0 +1,143 @@
+name: CCMMF Sipnet Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-repository:
+        description: 'Docker image repository for sipnet'
+        required: false
+        default: 'hdpriest0uiuc'
+        type: string
+      sipnet-image:
+        description: 'Sipnet image name and tag'
+        required: false
+        default: 'model-sipnet-git:latest'
+        type: string
+      workflows-branch:
+        description: 'Branch to checkout from workflows repo'
+        required: false
+        default: 'main'
+        type: string
+  workflow_call:
+    inputs:
+      image-repository:
+        description: 'Docker image repository for sipnet'
+        required: false
+        default: 'hdpriest0uiuc'
+        type: string
+      sipnet-image:
+        description: 'Sipnet image name and tag'
+        required: false
+        default: 'model-sipnet-git:latest'
+        type: string
+      workflows-branch:
+        description: 'Branch to checkout from workflows repo'
+        required: false
+        default: 'main'
+        type: string
+
+jobs:
+  ccmmf-sipnet-job:
+    runs-on: [self-hosted, linux, x64]  # Using your self-hosted runner
+    
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS CLI
+        run: |
+          echo "Configuring AWS CLI"
+          source /home/hdpriest/miniconda3/bin/activate awscli-env
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region garage
+          aws configure set default.s3.signature_version s3v4
+          module load apptainer
+
+      - name: Pull Sipnet image with Apptainer
+        run: |
+          echo "Pulling sipnet image from ${{ inputs.image-repository }}/${{ inputs.sipnet-image }}"
+          apptainer pull --force sipnet.sif docker://${{ inputs.image-repository }}/${{ inputs.sipnet-image }}
+          echo "Image pulled successfully:"
+          apptainer inspect sipnet.sif
+
+      - name: Download conda-pack from S3
+        run: |
+          echo "Downloading conda-pack from S3"
+          aws s3 cp \
+            --cli-read-timeout 120 \
+            --endpoint-url https://s3.garage.ccmmf.ncsa.cloud \
+            s3://carb/environments/PEcAn-head.tar.gz \
+            /tmp/pecan_environment.tar.gz
+          
+          echo "Download completed. File size:"
+          ls -lh /tmp/pecan_environment.tar.gz
+
+      - name: Create conda environment directory
+        run: |
+          echo "Creating conda environment directory"
+          mkdir -p $CONDA_ENV_PATH
+
+      - name: Decompress and unpack conda environment
+        run: |
+          echo "Decompressing conda-pack file"
+          tar -xzf /tmp/pecan_environment.tar.gz -C $CONDA_ENV_PATH
+          
+          echo "Running conda-unpack"
+          # Activate the environment and run conda-unpack
+          source $CONDA_ENV_PATH/bin/activate
+          conda-unpack
+          
+          echo "Conda environment unpacked successfully"
+          echo "Environment location: $CONDA_ENV_PATH"
+
+      - name: Clone ccmmf/workflows repository
+        run: |
+          echo "Cloning ccmmf/workflows repository"
+          git clone https://github.com/ccmmf/workflows.git $WORKFLOWS_DIR
+          cd $WORKFLOWS_DIR
+          git checkout ${{ inputs.workflows-branch }}
+          
+          echo "Repository cloned successfully"
+          echo "Current directory: $(pwd)"
+          echo "Repository contents:"
+          ls -la
+
+      - name: Setup R environment
+        run: |
+          echo "Setting up R environment"
+          # Activate the conda environment
+          source $CONDA_ENV_PATH/bin/activate
+          
+          # Verify R is available
+          which R
+          R --version
+          
+          # Install any additional R packages if needed
+          # R -e "install.packages(c('package1', 'package2'), repos='https://cran.rstudio.com/')"
+          
+          echo "R environment setup completed"
+
+      - name: List available R scripts
+        run: |
+          echo "Available R scripts in workflows repository:"
+          find $WORKFLOWS_DIR -name "*.R" -type f | head -20
+          
+          echo "Repository structure:"
+          tree $WORKFLOWS_DIR -L 3 || find $WORKFLOWS_DIR -type d | head -10
+
+      - name: Display workflow summary
+        run: |
+          echo "=== CCMMF Sipnet Workflow Summary ==="
+          echo "Sipnet image: ${{ inputs.image-repository }}/${{ inputs.sipnet-image }}"
+          echo "Conda environment: $CONDA_ENV_PATH"
+          echo "Workflows repository: $WORKFLOWS_DIR"
+          echo "S3 endpoint: https://s3.garage.ccmmf.ncsa.cloud"
+          echo "S3 bucket: carb"
+          echo "Conda pack file: environments/PEcAn-head.tar.gz"
+          echo "====================================="
+          
+          echo "Environment is ready for R script execution"
+          echo "To run an R script, use:"
+          echo "source $CONDA_ENV_PATH/bin/activate"
+          echo "Rscript $WORKFLOWS_DIR/path/to/script.R" 
