@@ -154,3 +154,17 @@ jobs:
       platforms: ${{ matrix.PLATFORM }}
     secrets: inherit
 
+# ----------------------------------------------------------------------
+# Next are images that have specific layers added 
+# ----------------------------------------------------------------------
+  sipnet-carb:
+      needs: [rversion, base, modelsbinary]
+      uses: ./.github/workflows/apptainer-build-image.yml
+      with:
+        image-name: sipnet-carb
+        build-context: sipnet-targets
+        dockerfile: sipnet-targets/Dockerfile
+        r-version: ${{ needs.rversion.outputs.R_VERSION }}
+        parent-image: "base"
+      secrets: inherit
+
